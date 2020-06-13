@@ -1,5 +1,4 @@
 $(function() {
-  var FADE_TIME = 150; // ms
   var COLORS = [
     '#e21400', '#91580f', '#f8a700', '#f78b00',
     '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
@@ -9,12 +8,13 @@ $(function() {
   // Initialize variables
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
-  var $messages = $('.messages'); // Messages area
-  var $inputMessage = $('.inputMessage'); // Input message input box
+  var $inputMessage = $('.global'); // Input message input box
   var $main = $("main");
   var $loginPage = $('.login.page'); // The login page
   var $chatPage = $('.chat.page'); // The chatroom page
-
+  var $inputgame = $('.local')
+  var $game = $('.hra')
+  var coplayer
   // Prompt for setting a username
   var username;
   var connected = false;
@@ -67,64 +67,51 @@ $(function() {
       socketl.emit('new message', message);
     }
   }
+  const sendGameMessage = () => {
+    var message = $inputgame.val();
+    // Prevent markup from being injected into the message
+    message = cleanInput(message);
+    // if there is a non-empty message and a socketl connection
+    if (message && connected) {
+      $inputgame.val('');
+      addGameChatMessage({
+        username: username,
+        message: message
+      });
+      // tell server to execute 'new message' and send along one parameter
+      socket.emit('game message', {
+        username: username,
+        message: message
+      });console.log({
+        username: username,
+        message: message
+      })
+    }
+  }
 
   // Log a message
-    const log = (message, options) => {
-    var $el = $('<li>').addClass('log').text(message);
-    addMessageElement($el, options);
+  const log = (message) => {
+    document.querySelector(".glob").innerHTML+='<p class="log" style="display: block;">'+message+'</p>'
+  }
+  const gameLog = (message) => {
+    document.querySelector(".localchat").innerHTML+='<p class="log" style="display: block;">'+message+'</p>'
   }
 
   // Adds the visual chat message to the message list
   const addChatMessage = (data) => {
-    document.querySelector(".messages.glob").innerHTML+='<li class="message" style="display: list-item;"><span class="username" style="color: '+getUsernameColor(data.username)+';">'+data.username+'</span><span class="messageBody">'+data.message+'</span></li>'
-
-
+    document.querySelector(".glob").innerHTML+='<p class="message" style="display: block;"><span class="username" style="color: '+getUsernameColor(data.username)+';">'+data.username+'</span><span class="messageBody">'+data.message+'</span></p>'
+  }
+  const addGameChatMessage = (data) => {
+    console.log(data)
+    document.querySelector(".localchat").innerHTML+='<p class="message" style="display: block;"><span class="username" style="color: '+getUsernameColor(data.username)+';">'+data.username+'</span><span class="messageBody">'+data.message+'</span></p>'
   }
 
-  // Adds a message element to the messages and scrolls to the bottom
-  // el - The element to add as a message
-  // options.fade - If the element should fade-in (default = true)
-  // options.prepend - If the element should prepend
-  //   all other messages (default = false)
-  const addMessageElement = (el, options) => {
-    var $el = $(el);
-
-    // Setup default options
-    if (!options) {
-      options = {};
-    }
-    if (typeof options.fade === 'undefined') {
-      options.fade = true;
-    }
-    if (typeof options.prepend === 'undefined') {
-      options.prepend = false;
-    }
-
-    // Apply options
-    if (options.fade) {
-      $el.hide().fadeIn(FADE_TIME);
-    }
-    if (options.prepend) {
-      $messages.prepend($el);
-    } else {
-      $messages.append($el);
-    }
-    $messages[0].scrollTop = $messages[0].scrollHeight;
-  }
 
   // Prevents input from having injected markup
   const cleanInput = (input) => {
     return $('<div/>').text(input).html();
   }
 
-
-
-  // Gets the 'X is typing' messages of a user
-  const getTypingMessages = (data) => {
-    return $('.typing.message').filter(function (i) {
-      return $(this).data('username') === data.username;
-    });
-  }
 
   // Gets the color of a username through our hash function
   const getUsernameColor = (username) => {
@@ -141,27 +128,28 @@ $(function() {
   // Keyboard events
 
   $window.keydown(event => {
-    // Auto-focus the current input when a key is typed
-    if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-      $currentInput.focus();
-    }
-    // When the client hits ENTER on their keyboard
-    if (event.which === 13) {
-      if (username) {
-        sendMessage();
-      } else {
+    if (event.which === 13 && !username) {
+        $currentInput.focus();
         setUsername();
-      }
     }
   });
 
-  // Focus input when clicking anywhere on login page
-  $loginPage.click(() => {
-    $currentInput.focus();
-});
 
+  $inputMessage.keydown(event => {
+    if (event.which === 13) {
+      sendMessage()
+    }
+  });
 
+  $inputgame.keydown(event => {
+    if (event.which === 13) {
+      sendGameMessage()
+    }
+  });
 
+  const join = (message) => {
+    document.querySelector(".localchat").innerHTML+='<p class="log" style="display: block;">'+message+'</p>'
+  }
   // socketl events
 
   // Whenever the server emits 'login', log the login message
@@ -200,5 +188,14 @@ $(function() {
   socketl.on('denied',() =>{
     alert("již použité jméno")
     location.reload();
+  })
+  socket.on('game chat', (data) => {
+    addGameChatMessage(data);
+  });
+  socket.on('in room', (coplayername) => {
+    coplayer=coplayername
+  });
+  socket.on('out room', () => {
+    coplayer=""
   })
 });

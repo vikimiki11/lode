@@ -60,4 +60,14 @@ io.on('connection', (socket) => {
     console.log(members)
   });
 
+  socket.on('game message', (data) => {
+    // we tell the client to execute 'new message'
+    socket.broadcast.emit('game chat', data);
+    console.log(data)
+  });
+  socket.on('game messages', (data) => {
+    // we tell the client to execute 'new message'
+    socket.broadcast.emit('game chat', data);
+    console.log(data)
+  });
 });

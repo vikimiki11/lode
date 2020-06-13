@@ -120,6 +120,17 @@ main div{
   display: none;
 }
 
+.localchat{
+  position: absolute;
+  overflow: auto;
+  padding: 0 1rem;
+  left: 0;
+  bottom: 4rem;
+  border: black solid 2px;
+  height: 20rem;
+  background-color: white;
+  width: 20rem;
+}
 .inputMessage {
   font-size: 100%;
 }
@@ -161,11 +172,15 @@ main div{
 .inputMessage {
   border: 10px solid #000;
   bottom: 0;
-  height: 60px;
+  height: 4rem;
   left: 0;
   outline: none;
   padding-left: 10px;
   position: absolute;
   right: 0;
   width: 100%;
+}
+
+.local{
+  width: 20rem;;
 }

@@ -11,28 +11,24 @@
       
     </div>
     <div class="hra">
-      <div class="chat local">
-        <div class="chatArea">
-          <div class="messages"></div>
-        </div>
-      </div>
+      <div class="localchat"></div>
+      <input class="inputMessage local" placeholder="Sem piš..."/>
     </div>
   </main>
-  <ul class="pages">
-    <li class="chat page">
+  <div class="pages">
+    <div class="chat page">
       <div class="chatArea">
         <ul class="messages glob"></ul>
       </div>
-      <input class="inputMessage" placeholder="Type here..."/>
-    </li>
-    <li class="login page">
-      <div class="form">
-        <h3 class="title">Napiš svoji přezdívku?</h3>
-        <input class="usernameInput" type="text" maxlength="32" />
-      </div>
-    </li>
-  </ul>
-
+      <input class="inputMessage global" placeholder="Sem piš..."/>
+    </div>
+  </div>
+  <div class="login page">
+    <div class="form">
+      <h3 class="title">Napiš svoji přezdívku?</h3>
+      <input class="usernameInput" type="text" maxlength="32" />
+    </div>
+  </div>
   <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="main.js"></script>
