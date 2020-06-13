@@ -20,9 +20,9 @@ $(function() {
   var connected = false;
   var $currentInput = $usernameInput.focus();
   if(window.location.hostname=="localhost"){
-  var socket = io("localhost:3000");
+  socket = io("localhost:3000");
   }else{
-  var socket = io(window.location.hostname);
+  socket = io(window.location.hostname);
   }
   if (localStorage.getItem('name')) {
     document.querySelector(".usernameInput").value=localStorage.getItem('name');
@@ -145,9 +145,6 @@ $(function() {
     }
   });
 
-  const join = (message) => {
-    document.querySelector(".localchat").innerHTML+='<p class="log" style="display: block;">'+message+'</p>'
-  }
   // socket events
 
   // Whenever the server emits 'login', log the login message
@@ -192,6 +189,7 @@ $(function() {
   });
   socket.on('in room', (coplayername) => {
     coplayer=coplayername
+    gameLog("Začal jsi hru s: "+coplayer)
     //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
   });
   socket.on('out room', () => {
@@ -203,5 +201,19 @@ $(function() {
   })
   socket.on('waiting for accept', () => {
     //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
+  })
+  function ping(){
+    let d = new Date();
+    let n = d.getTime();
+    socket.emit('pingpongball',(n))
+  }
+  socket.on('pingpongball',(data)=>{
+    let d = new Date();
+    let n = d.getTime();
+    console.log(n)
+    console.log(data[0])
+    console.log(data[1])
+    console.log(n-data[0])
+    console.log(n-data[1])
   })
 });

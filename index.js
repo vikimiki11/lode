@@ -86,4 +86,9 @@ io.on('connection', (socket) => {
       
     }
   });
+  socket.on('pingpongball',(data)=>{
+    let d = new Date();
+    let n = d.getTime();
+    socket.emit('pingpongball',([data,n]))
+  })
 });
