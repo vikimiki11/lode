@@ -123,7 +123,7 @@ $(function() {
     return COLORS[index];
   }
 
-  // Keyboard events
+  // Keyboard and mouse events
 
   $window.keydown(event => {
     if (event.which === 13 && !username) {
@@ -144,7 +144,9 @@ $(function() {
       sendGameMessage()
     }
   });
-
+  document.querySelector("#Quckgame").addEventListener("click", ()=>{
+    socket.emit('quickgame',)
+  });
   // socket events
 
   // Whenever the server emits 'login', log the login message
@@ -190,6 +192,8 @@ $(function() {
   socket.on('in room', (coplayername) => {
     coplayer=coplayername
     gameLog("Začal jsi hru s: "+coplayer)
+    $game.show()
+    $('.priprava').hide()
     //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
   });
   socket.on('out room', () => {
@@ -212,8 +216,11 @@ $(function() {
     let n = d.getTime();
     console.log(n)
     console.log(data[0])
-    console.log(data[1])
-    console.log(n-data[0])
-    console.log(n-data[1])
+    console.log("Ping mezi serverem a clientem: "+((n-data[0])/2))
+    console.log("Posunutí času ku serveru: "+(n-data[1]-((n-data[0])/2)))
   })
+  socket.on('jj',(data)=>{
+    socket.emit('jj',(data))
+  })
+  setInterval(function(){ping()},10000)
 });

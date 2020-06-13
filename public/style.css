@@ -31,6 +31,7 @@ body{
   width: 100%;
   height: 100%;
   min-width:600px;
+  overflow: hidden;
 }
 
 ul {
@@ -90,7 +91,7 @@ ul {
 }
 
 .login.page .title, .login.page .usernameInput {
-  color: #fff;
+  color: #EAEFF3;
   font-weight: 100;
 }
 
@@ -119,7 +120,8 @@ main div{
 }
 
 .priprava{
-  display: none;
+  padding-left: 25em;
+  padding-top: 10em;
 }
 
 .localchat{
@@ -130,11 +132,15 @@ main div{
   bottom: 4rem;
   border: black solid 2px;
   height: 20rem;
-  background-color: white;
+  background-color: #EAEFF3;
   width: 20rem;
 }
 .inputMessage {
   font-size: 100%;
+}
+
+.hra{
+  display: none;
 }
 
 .log {
@@ -185,4 +191,44 @@ main div{
 
 .local{
   width: 20rem;;
+}
+
+.centr{
+	margin:auto;
+	display:table
+}
+
+.promo-new-btn:hover {
+  text-decoration: none;
+  cursor: pointer;
+  background-size: 100% 400%;
+}
+.promo-new-btn {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  font-family: RobotoCondensed;
+  padding: 12px 0px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background-image: -webkit-gradient(linear,left bottom,left top,from(#de2414),to(#fc611d));
+  background-image: linear-gradient(0deg,#de2414 0,#fc611d);
+  background-size: 100% 100%;
+  color: #fff;
+  -webkit-transition: all .3s;
+  transition: all .3s;
+  font-size: 18px;
+  line-height: 24px;
+  text-align: center;
+  outline: 0;
+  -webkit-box-sizing: inherit;
+  box-sizing: inherit;
+  text-decoration: none;
+  border: 0;
 }
