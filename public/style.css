@@ -111,6 +111,15 @@ main{
   background-image: url(https://wowsp-wows-eu.wgcdn.co/dcont/fb/image/ec7b31f0-1849-11ea-9e05-38eaa735f4cc.jpg);
 }
 
+main div{
+  height: 100%;
+  width: 100%;
+}
+
+.priprava{
+  display: none;
+}
+
 .inputMessage {
   font-size: 100%;
 }

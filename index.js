@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Chatroom
 
 var numUsers = 0;
-
+var members = []
 io.on('connection', (socket) => {
   var addedUser = false;
   // when the client emits 'new message', this listens and executes
@@ -30,29 +30,34 @@ io.on('connection', (socket) => {
 
   // when the client emits 'add user', this listens and executes
   socket.on('add user', (username) => {
-    if (addedUser) return;
+    if(members.indexOf(username)==-1){
+      members[members.length]=username
+      if (addedUser) return;
 
-    // we store the username in the socket session for this client
-    socket.username = username;
-    console.log(socket)
-    console.log(socket.username)
-    ++numUsers;
-    addedUser = true;
-    socket.emit('login', {
-      numUsers: numUsers
-    });
+      // we store the username in the socket session for this client
+      socket.username = username;
+      console.log(socket.username)
+      console.log(members)
+      ++numUsers;
+      addedUser = true;
+      socket.emit('login', {
+        numUsers: numUsers
+      });
+    }else{socket.emit('denied',(true))}
   });
 
   // when the user disconnects.. perform this
   socket.on('disconnect', () => {
     if (addedUser) {
       --numUsers;
-
-      // echo globally that this client has left
-      socket.broadcast.emit('user left', {
-        username: socket.username,
-        numUsers: numUsers
-      });
     }
+    try{
+      delete members[members.indexOf(socket.username)]
+    }
+    catch(err){
+      console.log(err)
+    }
+    console.log(members)
   });
+
 });

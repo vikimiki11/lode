@@ -34,7 +34,7 @@ $(function() {
     if (data.numUsers === 1) {
       message += "Jsi tu sám";
     } else {
-      message += "Máš tu " + (data.numUsers-1) + " participants";
+      message += "Máš tu " + (data.numUsers-1) + " kamarády";
     }
     log(message);
   }
@@ -43,11 +43,6 @@ $(function() {
 
     // If the username is valid
     if (username) {
-      $loginPage.fadeOut();
-      $chatPage.show();
-      $main.show();
-      $loginPage.off('click');
-      $currentInput = $inputMessage.focus();
 
       // Tell the server your username
       socketl.emit('add user', username);
@@ -80,25 +75,10 @@ $(function() {
   }
 
   // Adds the visual chat message to the message list
-  const addChatMessage = (data, options) => {
-    // Don't fade the message in if there is an 'X was typing'
-    var $typingMessages = getTypingMessages(data);
-    options = options || {};
-    if ($typingMessages.length !== 0) {
-      options.fade = false;
-      $typingMessages.remove();
-    }
+  const addChatMessage = (data) => {
+    document.querySelector(".messages.glob").innerHTML+='<li class="message" style="display: list-item;"><span class="username" style="color: '+getUsernameColor(data.username)+';">'+data.username+'</span><span class="messageBody">'+data.message+'</span></li>'
 
-    var $usernameDiv = $('<span class="username"/>')
-      .text(data.username)
-      .css('color', getUsernameColor(data.username));
-    var $messageBodyDiv = $('<span class="messageBody">')
-      .text(data.message);
-    var $messageDiv = $('<li class="message"/>')
-      .data('username', data.username)
-      .append($usernameDiv, $messageBodyDiv);
 
-    addMessageElement($messageDiv, options);
   }
 
   // Adds a message element to the messages and scrolls to the bottom
@@ -178,7 +158,7 @@ $(function() {
   // Focus input when clicking anywhere on login page
   $loginPage.click(() => {
     $currentInput.focus();
-  });
+});
 
 
 
@@ -191,6 +171,11 @@ $(function() {
     var message = "Chat pro hráče lodí:";
     log(message);
     addParticipantsMessage(data);
+    $loginPage.fadeOut();
+    $chatPage.show();
+    $main.show();
+    $loginPage.off('click');
+    $currentInput = $inputMessage.focus();
   });
 
   // Whenever the server emits 'new message', update the chat body
@@ -212,4 +197,8 @@ $(function() {
   socketl.on('reconnect_error', () => {
     log('Pokus o znovupřipojení se nezdařil');
   });
+  socketl.on('denied',() =>{
+    alert("již použité jméno")
+    location.reload();
+  })
 });
