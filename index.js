@@ -19,10 +19,6 @@ var numUsers = 0;
 
 io.on('connection', (socket) => {
   var addedUser = false;
-  function clog(viki){
-    socket.broadcast.emit('clog', viki);
-  }
-
   // when the client emits 'new message', this listens and executes
   socket.on('new message', (data) => {
     // we tell the client to execute 'new message'
@@ -30,8 +26,6 @@ io.on('connection', (socket) => {
       username: socket.username,
       message: data
     });
-    clog(data)
-    socket.broadcast.emit('clog', data);
   });
 
   // when the client emits 'add user', this listens and executes
@@ -40,6 +34,8 @@ io.on('connection', (socket) => {
 
     // we store the username in the socket session for this client
     socket.username = username;
+    console.log(socket)
+    console.log(socket.username)
     ++numUsers;
     addedUser = true;
     socket.emit('login', {
@@ -49,20 +45,6 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('user joined', {
       username: socket.username,
       numUsers: numUsers
-    });
-  });
-
-  // when the client emits 'typing', we broadcast it to others
-  socket.on('typing', () => {
-    socket.broadcast.emit('typing', {
-      username: socket.username
-    });
-  });
-
-  // when the client emits 'stop typing', we broadcast it to others
-  socket.on('stop typing', () => {
-    socket.broadcast.emit('stop typing', {
-      username: socket.username
     });
   });
 
@@ -77,10 +59,5 @@ io.on('connection', (socket) => {
         numUsers: numUsers
       });
     }
-  });
-  var lobbys={}
-  socket.on('new lobby', (username) => {
-    lobbys[username]=""
-    socket.broadcast.emit('update lobby',lobbys );
   });
 });

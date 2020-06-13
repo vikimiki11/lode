@@ -1,6 +1,5 @@
 $(function() {
   var FADE_TIME = 150; // ms
-  var TYPING_TIMER_LENGTH = 400; // ms
   var COLORS = [
     '#e21400', '#91580f', '#f8a700', '#f78b00',
     '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
@@ -19,15 +18,18 @@ $(function() {
   // Prompt for setting a username
   var username;
   var connected = false;
-  var typing = false;
-  var lastTypingTime;
   var $currentInput = $usernameInput.focus();
   if(window.location.hostname=="localhost"){
-	var socket = io("localhost:3000");
+  socketl = io("localhost:3000");
+  socket = io("localhost:3000");
   }else{
-	var socket = io(window.location.hostname);
+  socketl = io(window.location.hostname);
+  socket = io(window.location.hostname);
   }
-
+  if (localStorage.getItem('name')) {
+    document.querySelector(".usernameInput").value=localStorage.getItem('name');
+  }
+  console.log(socketl)
   const addParticipantsMessage = (data) => {
     var message = '';
     if (data.numUsers === 1) {
@@ -37,8 +39,6 @@ $(function() {
     }
     log(message);
   }
-
-  // Sets the client's username
   const setUsername = () => {
     username = cleanInput($usernameInput.val().trim());
 
@@ -50,7 +50,8 @@ $(function() {
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
-      socket.emit('add user', username);
+      socketl.emit('add user', username);
+      localStorage.setItem('name', username);
     }
   }
 
@@ -59,7 +60,7 @@ $(function() {
     var message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
-    // if there is a non-empty message and a socket connection
+    // if there is a non-empty message and a socketl connection
     if (message && connected) {
       $inputMessage.val('');
       addChatMessage({
@@ -67,7 +68,7 @@ $(function() {
         message: message
       });
       // tell server to execute 'new message' and send along one parameter
-      socket.emit('new message', message);
+      socketl.emit('new message', message);
     }
   }
 
@@ -92,28 +93,11 @@ $(function() {
       .css('color', getUsernameColor(data.username));
     var $messageBodyDiv = $('<span class="messageBody">')
       .text(data.message);
-
-    var typingClass = data.typing ? 'typing' : '';
     var $messageDiv = $('<li class="message"/>')
       .data('username', data.username)
-      .addClass(typingClass)
       .append($usernameDiv, $messageBodyDiv);
 
     addMessageElement($messageDiv, options);
-  }
-
-  // Adds the visual chat typing message
-  const addChatTyping = (data) => {
-    data.typing = true;
-    data.message = 'is typing';
-    addChatMessage(data);
-  }
-
-  // Removes the visual chat typing message
-  const removeChatTyping = (data) => {
-    getTypingMessages(data).fadeOut(function () {
-      $(this).remove();
-    });
   }
 
   // Adds a message element to the messages and scrolls to the bottom
@@ -152,25 +136,7 @@ $(function() {
     return $('<div/>').text(input).html();
   }
 
-  // Updates the typing event
-  const updateTyping = () => {
-    if (connected) {
-      if (!typing) {
-        typing = true;
-        socket.emit('typing');
-      }
-      lastTypingTime = (new Date()).getTime();
 
-      setTimeout(() => {
-        var typingTimer = (new Date()).getTime();
-        var timeDiff = typingTimer - lastTypingTime;
-        if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
-          socket.emit('stop typing');
-          typing = false;
-        }
-      }, TYPING_TIMER_LENGTH);
-    }
-  }
 
   // Gets the 'X is typing' messages of a user
   const getTypingMessages = (data) => {
@@ -202,95 +168,47 @@ $(function() {
     if (event.which === 13) {
       if (username) {
         sendMessage();
-        socket.emit('stop typing');
-        typing = false;
       } else {
         setUsername();
       }
     }
   });
 
-  $inputMessage.on('input', () => {
-    updateTyping();
-  });
-
-  // Click events
-
   // Focus input when clicking anywhere on login page
   $loginPage.click(() => {
     $currentInput.focus();
   });
 
-  // Focus input when clicking on the message input's border
-  $inputMessage.click(() => {
-    $inputMessage.focus();
-  });
 
-  // Socket events
+
+  // socketl events
 
   // Whenever the server emits 'login', log the login message
-  socket.on('login', (data) => {
+  socketl.on('login', (data) => {
     connected = true;
     // Display the welcome message
     var message = "Chat pro hráče lodí:";
-    log(message, {
-      prepend: true
-    });
+    log(message);
     addParticipantsMessage(data);
   });
 
   // Whenever the server emits 'new message', update the chat body
-  socket.on('new message', (data) => {
+  socketl.on('new message', (data) => {
     addChatMessage(data);
   });
 
-  // Whenever the server emits 'user joined', log it in the chat body
-  socket.on('user joined', (data) => {
-    log(data.username + ' joined');
-    addParticipantsMessage(data);
-  });
-
-  // Whenever the server emits 'user left', log it in the chat body
-  socket.on('user left', (data) => {
-    log(data.username + ' left');
-    addParticipantsMessage(data);
-    removeChatTyping(data);
-  });
-
-  // Whenever the server emits 'typing', show the typing message
-  socket.on('typing', (data) => {
-    addChatTyping(data);
-  });
-
-  // Whenever the server emits 'stop typing', kill the typing message
-  socket.on('stop typing', (data) => {
-    removeChatTyping(data);
-  });
-
-  socket.on('disconnect', () => {
+  socketl.on('disconnect', () => {
     log('you have been disconnected');
   });
 
-  socket.on('reconnect', () => {
+  socketl.on('reconnect', () => {
     log('Připojení bylo obnoveno');
     if (username) {
-      socket.emit('add user', username);
+      socketl.emit('add user', username);
     }
   });
 
-  socket.on('reconnect_error', () => {
+  socketl.on('reconnect_error', () => {
     log('Pokus o znovupřipojení se nezdařil');
-  });
-
-  socket.on('clog', (viki) => {
-    console.log(viki);
-    log(viki)
-    console.log(socket)
-  });
-
-  socket.on('update lobby', (viki) => {
-    for(var i=0;i<viki.length;i++){
-      document.querySelectorAll("#lobby")[0].innerHTML+="viki"
-    }
   });
 });
