@@ -11,7 +11,7 @@ $(function() {
   var $usernameInput = $('.usernameInput'); // Input for username
   var $messages = $('.messages'); // Messages area
   var $inputMessage = $('.inputMessage'); // Input message input box
-
+  var $main = $("main");
   var $loginPage = $('.login.page'); // The login page
   var $chatPage = $('.chat.page'); // The chatroom page
 
@@ -29,13 +29,12 @@ $(function() {
   if (localStorage.getItem('name')) {
     document.querySelector(".usernameInput").value=localStorage.getItem('name');
   }
-  console.log(socketl)
   const addParticipantsMessage = (data) => {
     var message = '';
     if (data.numUsers === 1) {
-      message += "there's 1 participant";
+      message += "Jsi tu sám";
     } else {
-      message += "there are " + data.numUsers + " participants";
+      message += "Máš tu " + (data.numUsers-1) + " participants";
     }
     log(message);
   }
@@ -46,12 +45,14 @@ $(function() {
     if (username) {
       $loginPage.fadeOut();
       $chatPage.show();
+      $main.show();
       $loginPage.off('click');
       $currentInput = $inputMessage.focus();
 
       // Tell the server your username
       socketl.emit('add user', username);
       localStorage.setItem('name', username);
+      console.log(socketl)
     }
   }
 

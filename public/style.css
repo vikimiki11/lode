@@ -26,6 +26,13 @@ html, body {
   padding: 0;
 }
 
+body{
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-width:600px;
+}
+
 ul {
   list-style: none;
   word-wrap: break-word;
@@ -37,7 +44,8 @@ ul {
   height: 100%;
   margin: 0;
   padding: 0;
-  width: 100%;
+  max-width: 25rem;
+  flex:1;
 }
 
 .page {
@@ -93,12 +101,15 @@ ul {
   height: 100%;
   margin: 0;
   padding: 0;
-  width: 20em;
-  position: absolute;
-  right: 0px;
+  width: 25em;
   border-left: black solid 2px;
 }
 
+main{
+  display: none;
+  flex: 1 1 auto;
+  background-image: url(https://wowsp-wows-eu.wgcdn.co/dcont/fb/image/ec7b31f0-1849-11ea-9e05-38eaa735f4cc.jpg);
+}
 
 .inputMessage {
   font-size: 100%;
