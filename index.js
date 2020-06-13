@@ -17,6 +17,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 var numUsers = 0;
 var members = []
+var membersact={}
+var queue=[]
+var queueid=[]
 io.on('connection', (socket) => {
   var addedUser = false;
   // when the client emits 'new message', this listens and executes
@@ -32,6 +35,10 @@ io.on('connection', (socket) => {
   socket.on('add user', (username) => {
     if(members.indexOf(username)==-1){
       members[members.length]=username
+      membersact.username={}
+      membersact.username.active=0
+      membersact.username.rival=""
+      membersact.username.room=""
       if (addedUser) return;
 
       // we store the username in the socket session for this client
@@ -52,6 +59,9 @@ io.on('connection', (socket) => {
       --numUsers;
     }
     try{
+      membersact.username.active=0
+      membersact.username.rival=""
+      membersact.username.room=""
       delete members[members.indexOf(socket.username)]
     }
     catch(err){
@@ -63,11 +73,17 @@ io.on('connection', (socket) => {
   socket.on('game message', (data) => {
     // we tell the client to execute 'new message'
     socket.broadcast.emit('game chat', data);
+  });
+  socket.on('send invite', (data) => {
     console.log(data)
   });
-  socket.on('game messages', (data) => {
-    // we tell the client to execute 'new message'
-    socket.broadcast.emit('game chat', data);
-    console.log(data)
+  socket.on('quickgame', () => {
+    if(queue.length==0){
+      socket.emit('in queue')
+      queue[queue.length]=socket.username
+      queueid[username]=socket.id
+    }else{
+      
+    }
   });
 });

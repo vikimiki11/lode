@@ -109,6 +109,8 @@ main{
   display: none;
   flex: 1 1 auto;
   background-image: url(https://wowsp-wows-eu.wgcdn.co/dcont/fb/image/ec7b31f0-1849-11ea-9e05-38eaa735f4cc.jpg);
+  background-size: cover;
+  background-position: center center;
 }
 
 main div{

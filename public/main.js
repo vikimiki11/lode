@@ -20,11 +20,9 @@ $(function() {
   var connected = false;
   var $currentInput = $usernameInput.focus();
   if(window.location.hostname=="localhost"){
-  socketl = io("localhost:3000");
-  socket = io("localhost:3000");
+  var socket = io("localhost:3000");
   }else{
-  socketl = io(window.location.hostname);
-  socket = io(window.location.hostname);
+  var socket = io(window.location.hostname);
   }
   if (localStorage.getItem('name')) {
     document.querySelector(".usernameInput").value=localStorage.getItem('name');
@@ -45,9 +43,9 @@ $(function() {
     if (username) {
 
       // Tell the server your username
-      socketl.emit('add user', username);
+      socket.emit('add user', username);
       localStorage.setItem('name', username);
-      console.log(socketl)
+      console.log(socket)
     }
   }
 
@@ -56,7 +54,7 @@ $(function() {
     var message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
-    // if there is a non-empty message and a socketl connection
+    // if there is a non-empty message and a socket connection
     if (message && connected) {
       $inputMessage.val('');
       addChatMessage({
@@ -64,14 +62,14 @@ $(function() {
         message: message
       });
       // tell server to execute 'new message' and send along one parameter
-      socketl.emit('new message', message);
+      socket.emit('new message', message);
     }
   }
   const sendGameMessage = () => {
     var message = $inputgame.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
-    // if there is a non-empty message and a socketl connection
+    // if there is a non-empty message and a socket connection
     if (message && connected) {
       $inputgame.val('');
       addGameChatMessage({
@@ -150,10 +148,10 @@ $(function() {
   const join = (message) => {
     document.querySelector(".localchat").innerHTML+='<p class="log" style="display: block;">'+message+'</p>'
   }
-  // socketl events
+  // socket events
 
   // Whenever the server emits 'login', log the login message
-  socketl.on('login', (data) => {
+  socket.on('login', (data) => {
     connected = true;
     // Display the welcome message
     var message = "Chat pro hráče lodí:";
@@ -167,25 +165,25 @@ $(function() {
   });
 
   // Whenever the server emits 'new message', update the chat body
-  socketl.on('new message', (data) => {
+  socket.on('new message', (data) => {
     addChatMessage(data);
   });
 
-  socketl.on('disconnect', () => {
+  socket.on('disconnect', () => {
     log('you have been disconnected');
   });
 
-  socketl.on('reconnect', () => {
+  socket.on('reconnect', () => {
     log('Připojení bylo obnoveno');
     if (username) {
-      socketl.emit('add user', username);
+      socket.emit('add user', username);
     }
   });
 
-  socketl.on('reconnect_error', () => {
+  socket.on('reconnect_error', () => {
     log('Pokus o znovupřipojení se nezdařil');
   });
-  socketl.on('denied',() =>{
+  socket.on('denied',() =>{
     alert("již použité jméno")
     location.reload();
   })
@@ -194,8 +192,16 @@ $(function() {
   });
   socket.on('in room', (coplayername) => {
     coplayer=coplayername
+    //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
   });
   socket.on('out room', () => {
     coplayer=""
+    //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
+  })
+  socket.on('in queue', () => {
+    //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
+  })
+  socket.on('waiting for accept', () => {
+    //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
   })
 });
