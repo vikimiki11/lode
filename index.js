@@ -91,6 +91,16 @@ io.on('connection', (socket) => {
     console.log("OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data.message);
     socket.broadcast.to(membersact[socket.username].room).emit('game chat', data);
   });
+  socket.on('fire', (data) => {
+    // we tell the client to execute 'new message'
+    console.log("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data);
+    socket.broadcast.to(membersact[socket.username].room).emit('cover', data);
+  });
+  socket.on('ready', (data) => {
+    // we tell the client to execute 'new message'
+    console.log("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: ready");
+    socket.broadcast.to(membersact[socket.username].room).emit('prepared', data);
+  });
   socket.on('send invite', (data) => {
     console.log(data)
   });

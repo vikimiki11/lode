@@ -4,7 +4,8 @@ $(function() {
     '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
     '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
   ];
-
+  rivaldata=[]
+  var cascomitu=999999999999999
   // Initialize variables
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
@@ -121,6 +122,13 @@ $(function() {
     // Calculate color
     var index = Math.abs(hash % COLORS.length);
     return COLORS[index];
+  }
+  function game(sekce){
+    if(sekce){
+
+    }else{
+
+    }
   }
   //print lodí do tabulky
     function printlodi(arr){
@@ -333,15 +341,28 @@ $(function() {
   document.querySelector("#kontrola").addEventListener("click", ()=>{
     if(lodetometrix(aktlode)){
       if(!(checkfortouch(lodetometrix(aktlode)))){
-        alert("done")
+        malert("Máš to správně sestavené")
+        $("#kontrola").hide()
+        let d = new Date();
+        cascomitu = d.getTime();
+        ichprepare=true
+        socket.emit('ready',[aktlode,cascomitu])
+        if(derprepare){
+          malert("Hra začala")
+          if(rivalcas<cascomitu){
+            game(true)
+          }else{
+            game(false)
+          }
+        }
       }else{
         v=checkfortouch(lodetometrix(aktlode))
         document.getElementById(v[0].toString()).style.backgroundColor = "red";
         document.getElementById(v[1].toString()).style.backgroundColor = "red";
-        alert("Lodě se nesmí dotýkat. Ani rohy se nesmí dotýkat.")
+        malert("Lodě se nesmí dotýkat. Ani rohy se nesmí dotýkat.")
       }
     }else{
-      alert("Některé lodě se ti překrívají a nebo jsou mimo pole.")
+      malert("Některé lodě se ti překrívají a nebo jsou mimo pole.")
     }
   });
   // socket events
@@ -390,7 +411,10 @@ $(function() {
     gameLog("Začal jsi hru s: "+coplayer)
     $game.show()
     build=true
+    $("#kontrola").show()
     $('.priprava').hide()
+    ichprepare=false
+    derprepare=false
     //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
   });
   socket.on('out room', () => {
@@ -423,9 +447,33 @@ $(function() {
   socket.on('jj',(data)=>{
     socket.emit('jj',(data))
   })
+  socket.on('cover',(data)=>{
+    game(true)
+  })
+  socket.on('prepared',(data)=>{
+    rivaldata=data[0]
+    rivalcas=data[1]
+    derprepare=true
+    if(ichprepare){
+      malert("Hra začala")
+      if(rivalcas<cascomitu){
+        game(true)
+      }else{
+        game(false)
+      }
+    }
+  })
   //intervaly pro jakékoly účely
   opal=0
   setInterval(function(){ping()},10000)
-  setInterval(function(){opal=opal*0.99;document.querySelector(".alert").style.opacity=opal},100)
+  setInterval(function(){opal=opal*0.96;document.querySelector(".alert").style.opacity=opal},100)
   function malert(mes){document.querySelector(".alert").innerHTML=mes;opal=1}
+  document.querySelectorAll("table.centr td").forEach(item => {
+    item.addEventListener('click', event => {
+      if(clickcare){
+        
+        clickcare=false
+      }
+    })
+  })
 })
