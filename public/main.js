@@ -124,6 +124,7 @@ $(function() {
   }
   //print lodí do tabulky
     function printlodi(arr){
+      document.querySelector("#lode").innerHTML=""
       for(var i=0;i<arr.length;i++){
         console.log(i)
         console.log(arr)
@@ -145,13 +146,115 @@ $(function() {
           miny=miny-((arr[i].h-1)/2)+((arr[i].w-1)/2)
           minx=minx+((arr[i].h-1)/2)-((arr[i].w-1)/2)
         }
-        document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);' src='img/"+arr[i].src+".png'>"
+        document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);' src='img/"+arr[i].src+".png' draggable='true' id='"+i+"'>"
+      }
+      if(build){
+        document.querySelectorAll('img').forEach(item => {
+          item.addEventListener('dragstart', event => {
+            console.log("startdrag"+event.clientX+" "+event.clientY );
+            x=event.clientX
+            y=event.clientY
+          })
+          item.addEventListener('dragend', event => {
+            cr=document.querySelectorAll("table :nth-child(2) :nth-child(2)")[0]
+            console.log("enddrag"+event.clientX+" "+event.clientY );
+            console.log(event);
+            jumpx=Math.round((event.clientX-x)/cr.offsetHeight)
+            jumpy=Math.round((event.clientY-y)/cr.offsetHeight)
+            id=event.target.id
+            for(let y=0;y<arr[id].souradnice.length;y++){
+              arr[id].souradnice[y][0]=arr[id].souradnice[y][0]+jumpx
+              arr[id].souradnice[y][1]=arr[id].souradnice[y][1]+jumpy
+            }
+            printlodi(aktlode)
+          })
+          item.addEventListener('click', event => {
+            id=event.target.id
+            miny=9999999
+            minx=9999999
+            maxy=-9999999
+            maxx=-9999999
+            newpole=[]
+            for(let y=0;y<arr[id].souradnice.length;y++){
+              if(arr[id].souradnice[y][0]<minx){
+                minx=arr[id].souradnice[y][0]
+              }
+              if(arr[id].souradnice[y][1]<miny){
+                miny=arr[id].souradnice[y][1]
+              }
+              if(arr[id].souradnice[y][0]>maxx){
+                maxx=arr[id].souradnice[y][0]
+              }
+              if(arr[id].souradnice[y][1]>maxy){
+                maxy=arr[id].souradnice[y][1]
+              }
+            }
+            dx=maxx-minx
+            dy=maxy-miny
+            for(let y=0;y<arr[id].souradnice.length;y++){
+              newpole[y]=[]
+              newpole[y][1]=arr[id].souradnice[y][0]-minx+miny
+              newpole[y][0]=minx+(arr[id].souradnice[y][1]-miny)
+            }
+            arr[id].souradnice=newpole
+            arr[id].otoceni++
+            printlodi(aktlode)
+          })
+        })
       }
     }
     function lodetometrix(arr){
+      pole=[]
+      for(var i=0;i<(document.querySelectorAll("table.centr tr td").length/document.querySelectorAll("table.centr tr").length);i++){
+        pole[i]=[]
+        for(let d=0;d<document.querySelectorAll("table.centr tr").length;d++){
+          pole[i][d]="voda"
+      }
+    }
       for(var i=0;i<arr.length;i++){
         for(let d=0;d<arr[i].souradnice.length;d++){
-          
+          if(!(arr[i].souradnice[d][0]<0 || arr[i].souradnice[d][1]<0 || arr[i].souradnice[d][0]>(document.querySelectorAll("table.centr tr td").length/document.querySelectorAll("table.centr tr").length-1) || arr[i].souradnice[d][1]>document.querySelectorAll("table.centr tr").length-1 || pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]!="voda")){
+            pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]=i
+          }else{
+            return false
+          }
+        }
+      }
+      return pole
+    }
+    function checkfortouch(arr){
+      for(i=0;i<arr.length;i++){
+        for(y=0;y<arr[i].length;y++){
+          if(arr[y][i]!="voda"){
+            console.log("x: "+y+" y: "+i+" = "+arr[y][i])
+            s=arr[y][i]
+            a=rwe(arr[y+1],i)
+            b=rwe(arr[y+1],i+1)
+            c=rwe(arr[y],i+1)
+            d=rwe(arr[y-1],i+1)
+            if(!(a=="voda" || a==s)){
+              return [arr[y][i],a]
+            }
+            if(!(b=="voda" || b==s)){
+              return [arr[y][i],b]
+            }
+            if(!(c=="voda" || c==s)){
+              return [arr[y][i],c]
+            }
+            if(!(d=="voda" || d==s)){
+              return [arr[y][i],d]
+            }
+          }
+        }
+      }
+      return false
+    }
+    function rwe(padum,id){
+      try{
+        return padum[id]
+      }
+      catch{
+        return "voda"
       }
     }
     startlode=[
@@ -161,8 +264,26 @@ $(function() {
         souradnice:[[0,-1]],
         src:"kostka",
         otoceni:0
+      },
+      {
+        w:2,
+        h:2,
+        souradnice:[[-2,0],[-1,0],[-2,1],[-1,1]],
+        src:"Kkostka",
+        otoceni:0
+      },
+      {
+        w:5,
+        h:2,
+        souradnice:[[2,-1],[3,-1],[4,-1],[5,-1],[6,-1],[5,-2],[3,-2]],
+        src:"parnik",
+        otoceni:0
       }
     ]
+    aktlode=startlode
+    build=true
+    printlodi(aktlode)
+    console.log(lodetometrix(aktlode))
     
   // Keyboard and mouse events
 
@@ -187,6 +308,20 @@ $(function() {
   });
   document.querySelector("#Quckgame").addEventListener("click", ()=>{
     socket.emit('quickgame',)
+  });
+  document.querySelector("#kontrola").addEventListener("click", ()=>{
+    if(lodetometrix(aktlode)){
+      if(!(checkfortouch(lodetometrix(aktlode)))){
+        alert("done")
+      }else{
+        v=checkfortouch(lodetometrix(aktlode))
+        document.getElementById(v[0].toString()).style.backgroundColor = "red";
+        document.getElementById(v[1].toString()).style.backgroundColor = "red";
+        alert("Lodě se nesmí dotýkat. Ani rohy se nesmí dotýkat.")
+      }
+    }else{
+      alert("Některé lodě se ti překrívají a nebo jsou mimo pole.")
+    }
   });
   // socket events
 
@@ -234,6 +369,7 @@ $(function() {
     coplayer=coplayername
     gameLog("Začal jsi hru s: "+coplayer)
     $game.show()
+    build=true
     $('.priprava').hide()
     //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
   });
@@ -264,4 +400,4 @@ $(function() {
     socket.emit('jj',(data))
   })
   setInterval(function(){ping()},10000)
-});
+})
