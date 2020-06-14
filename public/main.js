@@ -142,7 +142,7 @@ $(function() {
           console.log(arr[i].souradnice[y][1])
           console.log(arr[i].souradnice[y][0])
         }
-        if(arr[i].otoceni%2==1){
+        if(Math.abs(arr[i].otoceni)%2==1){
           miny=miny-((arr[i].h-1)/2)+((arr[i].w-1)/2)
           minx=minx+((arr[i].h-1)/2)-((arr[i].w-1)/2)
         }
@@ -194,7 +194,7 @@ $(function() {
             for(let y=0;y<arr[id].souradnice.length;y++){
               newpole[y]=[]
               newpole[y][1]=arr[id].souradnice[y][0]-minx+miny
-              newpole[y][0]=minx+(arr[id].souradnice[y][1]-miny)
+              newpole[y][0]=(((miny+maxy)/2-arr[id].souradnice[y][1])+(minx+dy/2))
             }
             arr[id].souradnice=newpole
             arr[id].otoceni++
@@ -213,7 +213,7 @@ $(function() {
     }
       for(var i=0;i<arr.length;i++){
         for(let d=0;d<arr[i].souradnice.length;d++){
-          if(!(arr[i].souradnice[d][0]<0 || arr[i].souradnice[d][1]<0 || arr[i].souradnice[d][0]>(document.querySelectorAll("table.centr tr td").length/document.querySelectorAll("table.centr tr").length-1) || arr[i].souradnice[d][1]>document.querySelectorAll("table.centr tr").length-1 || pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]!="voda")){
+          if(!(arr[i].souradnice[d][0]<0 || arr[i].souradnice[d][1]<0 || arr[i].souradnice[d][0]>(document.querySelectorAll("table.centr tr td").length/document.querySelectorAll("table.centr tr").length) || arr[i].souradnice[d][1]>(document.querySelectorAll("table.centr tr").length-1) || pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]!="voda")){
             pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]=i
           }else{
             return false
@@ -232,16 +232,17 @@ $(function() {
             b=rwe(arr[y+1],i+1)
             c=rwe(arr[y],i+1)
             d=rwe(arr[y-1],i+1)
-            if(!(a=="voda" || a==s)){
+            viki=[1]
+            if(!(a=="voda" || a==s || (typeof a)=="undefined")){
               return [arr[y][i],a]
             }
-            if(!(b=="voda" || b==s)){
+            if(!(b=="voda" || b==s || (typeof b)=="undefined")){
               return [arr[y][i],b]
             }
-            if(!(c=="voda" || c==s)){
+            if(!(c=="voda" || c==s || (typeof c)=="undefined")){
               return [arr[y][i],c]
             }
-            if(!(d=="voda" || d==s)){
+            if(!(d=="voda" || d==s || (typeof d)=="undefined")){
               return [arr[y][i],d]
             }
           }
@@ -255,6 +256,14 @@ $(function() {
       }
       catch{
         return "voda"
+      }
+    }
+    function isd(padum,ts){
+      try{
+        trychromazie=padum[ts]
+        return true
+      }catch{
+        return false 
       }
     }
     startlode=[
@@ -278,6 +287,21 @@ $(function() {
         souradnice:[[2,-1],[3,-1],[4,-1],[5,-1],[6,-1],[5,-2],[3,-2]],
         src:"parnik",
         otoceni:0
+      },
+      {
+        w:3,
+        h:2,
+        souradnice:[[8,-1],[9,-1],[10,-1],[9,-2]],
+        src:"tetris",
+        otoceni:0
+      }
+      ,
+      {
+        w:4,
+        h:1,
+        souradnice:[[-1,3],[-1,4],[-1,5],[-1,6]],
+        src:"runway",
+        otoceni:1
       }
     ]
     aktlode=startlode
