@@ -258,14 +258,6 @@ $(function() {
         return "voda"
       }
     }
-    function isd(padum,ts){
-      try{
-        trychromazie=padum[ts]
-        return true
-      }catch{
-        return false 
-      }
-    }
     startlode=[
       {
         w:1,
@@ -330,8 +322,13 @@ $(function() {
       sendGameMessage()
     }
   });
+  quckread=true
   document.querySelector("#Quckgame").addEventListener("click", ()=>{
-    socket.emit('quickgame',)
+    if(quckread || window.location.hostname=="localhost"){
+      socket.emit('quickgame',)
+      quckread=false
+      setTimeout(function(){quckread=true},1000)
+    }
   });
   document.querySelector("#kontrola").addEventListener("click", ()=>{
     if(lodetometrix(aktlode)){
@@ -348,7 +345,6 @@ $(function() {
     }
   });
   // socket events
-
   // Whenever the server emits 'login', log the login message
   socket.on('login', (data) => {
     connected = true;
@@ -403,6 +399,10 @@ $(function() {
   })
   socket.on('in queue', () => {
     //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
+    malert("Jsi v pořadí počkej.")
+    if(window.location.hostname!="localhost"){
+      $('.priprava').hide()
+    }
   })
   socket.on('waiting for accept', () => {
     //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
@@ -423,5 +423,9 @@ $(function() {
   socket.on('jj',(data)=>{
     socket.emit('jj',(data))
   })
+  //intervaly pro jakékoly účely
+  opal=0
   setInterval(function(){ping()},10000)
+  setInterval(function(){opal=opal*0.99;document.querySelector(".alert").style.opacity=opal},100)
+  function malert(mes){document.querySelector(".alert").innerHTML=mes;opal=1}
 })
