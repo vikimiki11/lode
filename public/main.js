@@ -122,7 +122,48 @@ $(function() {
     var index = Math.abs(hash % COLORS.length);
     return COLORS[index];
   }
-
+  //print lodí do tabulky
+    function printlodi(arr){
+      for(var i=0;i<arr.length;i++){
+        console.log(i)
+        console.log(arr)
+        miny=9999999
+        minx=9999999
+        for(let y=0;y<arr[i].souradnice.length;y++){
+          if(arr[i].souradnice[y][0]<minx){
+            minx=arr[i].souradnice[y][0]
+          }
+          if(arr[i].souradnice[y][1]<miny){
+            miny=arr[i].souradnice[y][1]
+          }
+          console.log(minx)
+          console.log(miny)
+          console.log(arr[i].souradnice[y][1])
+          console.log(arr[i].souradnice[y][0])
+        }
+        if(arr[i].otoceni%2==1){
+          miny=miny-((arr[i].h-1)/2)+((arr[i].w-1)/2)
+          minx=minx+((arr[i].h-1)/2)-((arr[i].w-1)/2)
+        }
+        document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);' src='img/"+arr[i].src+".png'>"
+      }
+    }
+    function lodetometrix(arr){
+      for(var i=0;i<arr.length;i++){
+        for(let d=0;d<arr[i].souradnice.length;d++){
+          
+      }
+    }
+    startlode=[
+      {
+        w:1,
+        h:1,
+        souradnice:[[0,-1]],
+        src:"kostka",
+        otoceni:0
+      }
+    ]
+    
   // Keyboard and mouse events
 
   $window.keydown(event => {

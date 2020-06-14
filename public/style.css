@@ -30,7 +30,8 @@ body{
   display: flex;
   width: 100%;
   height: 100%;
-  min-width:600px;
+  min-width:1200px;
+  min-height: 600px;
   overflow: hidden;
 }
 
@@ -45,8 +46,7 @@ ul {
   height: 100%;
   margin: 0;
   padding: 0;
-  max-width: 25rem;
-  flex:1;
+  width: 25rem;
 }
 
 .page {
@@ -104,6 +104,7 @@ ul {
   padding: 0;
   width: 25em;
   border-left: black solid 2px;
+  min-height: 600px;
 }
 
 main{
@@ -119,7 +120,7 @@ main div{
   width: 100%;
 }
 
-.priprava{
+main > div{
   padding-left: 25em;
   padding-top: 10em;
 }
@@ -231,4 +232,19 @@ main div{
   box-sizing: inherit;
   text-decoration: none;
   border: 0;
+}
+/*tabulka věci*/
+.hra table{
+  border-collapse: collapse;
+  background-color: #EAEFF3;
+}
+.hra table tr td{
+  height: 1em;
+  width: 1em;
+  border: 0.01em solid black;
+  padding: 0;
+
+}
+.hracipole{
+  font-size: 300%;
 }

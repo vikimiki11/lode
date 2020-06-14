@@ -26,6 +26,7 @@ io.on('connection', (socket) => {
   // when the client emits 'new message', this listens and executes
   socket.on('new message', (data) => {
     // we tell the client to execute 'new message'
+    console.log("OD: "+socket.username+" Do: Global Co: "+data);
     socket.broadcast.emit('new message', {
       username: socket.username,
       message: data
@@ -88,8 +89,6 @@ io.on('connection', (socket) => {
   socket.on('game message', (data) => {
     // we tell the client to execute 'new message'
     console.log("OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data.message);
-    console.log(io.sockets.clients(membersact[socket.username].room))
-    console.log(socket.rooms)
     socket.broadcast.to(membersact[socket.username].room).emit('game chat', data);
   });
   socket.on('send invite', (data) => {
@@ -100,7 +99,6 @@ io.on('connection', (socket) => {
       socket.emit('in queue')
       queue[queue.length]=socket.username
     }else{
-      console.log(io.sockets.clients()[queue[0]]);
       user1=socket.username
       user2=queue[0]
       socket.emit('in room',user2)
