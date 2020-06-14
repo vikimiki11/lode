@@ -362,7 +362,7 @@ $(function() {
         malert("Lodě se nesmí dotýkat. Ani rohy se nesmí dotýkat.")
       }
     }else{
-      malert("Některé lodě se ti překrívají a nebo jsou mimo pole.")
+      malert("Některé lodě se ti překrývají a nebo jsou mimo pole.")
     }
   });
   // socket events
