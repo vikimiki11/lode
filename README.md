@@ -1,22 +1,21 @@
 
-# Socket.IO Chat
+# Lodě
 
-A simple chat demo for socket.io
+Vikiho forma super hry Lodě
 
-## How to use
+## Co je potřeba
 
 ```
 $ npm ci
 $ npm start
 ```
 
-And point your browser to `http://localhost:3000`. Optionally, specify
-a port by supplying the `PORT` env variable.
+Buď to pojedete přes local host a v tom případě to bude mít port 3000 `http://localhost:3000`.
+A nebo to pojedete na serveru a v tom případě je třeba mít uložený PORT v env variable.
 
 ## Features
 
-- Multiple users can join a chat room by each entering a unique username
-on website load.
-- Users can type chat messages to the chat room.
-- A notification is sent to all users when a user joins or leaves
-the chatroom.
+- Několik hráču se může připojit a povídat si v global chatu
+- Poté se můžou v chatu domluvit a přes invite funkci si spolu zahrát
+- Také je tu možnost Quickgame, která tě hodí s někým nahodným kdo taky dal Quickgame do hry
+- Jednotlivé hry mají vlastní chat

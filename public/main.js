@@ -4,6 +4,7 @@ $(function() {
     '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
     '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
   ];
+  clickcare=false
   rivaldata=[]
   var cascomitu=999999999999999
   // Initialize variables
@@ -125,10 +126,61 @@ $(function() {
   }
   function game(sekce){
     if(sekce){
-
+      merge(rivaldata,myfarr,false)
+      clickcare=true
     }else{
-
+      merge(aktlode,enfarr,true)
     }
+  }
+  function merge(larr,sarr,my){
+    lmat=lodetometrix(larr)
+    toprint=[]
+    for(i=0;i<sarr.length;i++){
+      if(lmat[sarr[i][1]][sarr[i][0]]=="voda"){
+        lmat[sarr[i][1]][sarr[i][0]]="miss"
+      }else{
+        lmat[sarr[i][1]][sarr[i][0]]="bum"
+      }
+    }
+    anyf=true
+    for(i=0;i<larr.length;i++){
+      finded=false
+      for(x=0;x<lmat.length;x++){
+        for(y=0;y<lmat[x].length;y++){
+          if(lmat[x][y]==i.toString()){
+            finded=true
+            anyf=false
+          }
+        }
+      }
+      if(!finded || my){
+        toprint[toprint.length]=larr[i]
+      }
+    }
+    for(i=0;i<sarr.length;i++){
+      if(lmat[sarr[i][1]][sarr[i][0]]=="miss"){
+        toprint[toprint.length]={
+        w:1,
+        h:1,
+        souradnice:[[sarr[i][1],sarr[i][0]]],
+        src:"kapka",
+        otoceni:0,
+        l:false
+        }
+      }else{
+        toprint[toprint.length]={
+          w:1,
+          h:1,
+          souradnice:[[sarr[i][1],sarr[i][0]]],
+          src:"X",
+          otoceni:0,
+          l:false
+        }
+      }
+      
+    }
+    printlodi(toprint)
+    return anyf
   }
   //print lodí do tabulky
     function printlodi(arr){
@@ -154,7 +206,15 @@ $(function() {
           miny=miny-((arr[i].h-1)/2)+((arr[i].w-1)/2)
           minx=minx+((arr[i].h-1)/2)-((arr[i].w-1)/2)
         }
+        if(build){
         document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);' src='img/"+arr[i].src+".png' draggable='true' id='"+i+"'>"
+        }else{
+          if(arr[i].l){
+            document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);pointer-events: none;' src='img/"+arr[i].src+".png' id='"+i+"'>"
+          }else{
+            document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);' src='img/"+arr[i].src+".png' id='"+i+"'>"
+          }
+        }
       }
       if(build){
         document.querySelectorAll('img').forEach(item => {
@@ -221,8 +281,12 @@ $(function() {
     }
       for(var i=0;i<arr.length;i++){
         for(let d=0;d<arr[i].souradnice.length;d++){
-          if(!(arr[i].souradnice[d][0]<0 || arr[i].souradnice[d][1]<0 || arr[i].souradnice[d][0]>(document.querySelectorAll("table.centr tr td").length/document.querySelectorAll("table.centr tr").length) || arr[i].souradnice[d][1]>(document.querySelectorAll("table.centr tr").length-1) || pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]!="voda")){
-            pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]=i
+          if(!(arr[i].souradnice[d][0]<0 || arr[i].souradnice[d][1]<0 || arr[i].souradnice[d][0]>(document.querySelectorAll("table.centr tr td").length/document.querySelectorAll("table.centr tr").length-1) || arr[i].souradnice[d][1]>(document.querySelectorAll("table.centr tr").length-1))){
+            if(pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]=="voda"){
+              pole[arr[i].souradnice[d][0]][arr[i].souradnice[d][1]]=i
+            }else{
+              return false
+            }
           }else{
             return false
           }
@@ -272,28 +336,32 @@ $(function() {
         h:1,
         souradnice:[[0,-1]],
         src:"kostka",
-        otoceni:0
+        otoceni:0,
+        l:true
       },
       {
         w:2,
         h:2,
         souradnice:[[-2,0],[-1,0],[-2,1],[-1,1]],
         src:"Kkostka",
-        otoceni:0
+        otoceni:0,
+        l:true
       },
       {
         w:5,
         h:2,
         souradnice:[[2,-1],[3,-1],[4,-1],[5,-1],[6,-1],[5,-2],[3,-2]],
         src:"parnik",
-        otoceni:0
+        otoceni:0,
+        l:true
       },
       {
         w:3,
         h:2,
         souradnice:[[8,-1],[9,-1],[10,-1],[9,-2]],
         src:"tetris",
-        otoceni:0
+        otoceni:0,
+        l:true
       }
       ,
       {
@@ -301,12 +369,11 @@ $(function() {
         h:1,
         souradnice:[[-1,3],[-1,4],[-1,5],[-1,6]],
         src:"runway",
-        otoceni:1
+        otoceni:1,
+        l:true
       }
     ]
     aktlode=startlode
-    build=true
-    printlodi(aktlode)
     console.log(lodetometrix(aktlode))
     
   // Keyboard and mouse events
@@ -346,6 +413,8 @@ $(function() {
         let d = new Date();
         cascomitu = d.getTime();
         ichprepare=true
+        build=false
+        printlodi(aktlode)
         socket.emit('ready',[aktlode,cascomitu])
         if(derprepare){
           malert("Hra začala")
@@ -411,10 +480,13 @@ $(function() {
     gameLog("Začal jsi hru s: "+coplayer)
     $game.show()
     build=true
+    printlodi(aktlode)
     $("#kontrola").show()
     $('.priprava').hide()
     ichprepare=false
     derprepare=false
+    enfarr=[]
+    myfarr=[]
     //idiooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooot
   });
   socket.on('out room', () => {
@@ -448,7 +520,12 @@ $(function() {
     socket.emit('jj',(data))
   })
   socket.on('cover',(data)=>{
-    game(true)
+    enfarr[enfarr.length]=data
+    win=merge(aktlode,enfarr,true)
+    if(win){
+      malert("YOU FUCKING DONKEY")
+    }
+    setTimeout(function(){game(true)},5000)
   })
   socket.on('prepared',(data)=>{
     rivaldata=data[0]
@@ -471,7 +548,13 @@ $(function() {
   document.querySelectorAll("table.centr td").forEach(item => {
     item.addEventListener('click', event => {
       if(clickcare){
-        
+        myfarr[myfarr.length]=item.id.split("bunka")[1]
+        socket.emit("fire",item.id.split("bunka")[1])
+        win=merge(rivaldata,myfarr,false)
+        if(win){
+          malert("easy Win lol")
+        }
+        setTimeout(function(){game(false)},5000)
         clickcare=false
       }
     })
