@@ -14,7 +14,7 @@ server.listen(port, () => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Chatroom
-
+var logs=[]
 var numUsers = 0;
 var members = []
 var membersact={}
@@ -26,7 +26,7 @@ io.on('connection', (socket) => {
   // when the client emits 'new message', this listens and executes
   socket.on('new message', (data) => {
     // we tell the client to execute 'new message'
-    console.log("OD: "+socket.username+" Do: Global Co: "+data);
+    logit("OD: "+socket.username+" Do: Global Co: "+data);
     socket.broadcast.emit('new message', {
       username: socket.username,
       message: data
@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
   socket.on('add user', (username) => {
     if(members.indexOf(username)==-1){
       members[members.length]=username
-      console.log("připojil se: "+username)
+      logit("připojil se: "+username+" takže tu už máme:")
       membersact[username]={}
       membersact[username].active=0
       membersact[username].rival=""
@@ -47,7 +47,8 @@ io.on('connection', (socket) => {
 
       // we store the username in the socket session for this client
       socket.username = username;
-      console.log(members)
+      logit(members)
+      logit("konec uživatelů")
       ++numUsers;
       addedUser = true;
       socket.emit('login', {
@@ -72,37 +73,40 @@ io.on('connection', (socket) => {
       queue=queue.filter(function (el) {
         return el != socket.username;
       });
-      console.log("čekárna"+queue);
-      console.log("memeber act");
-      console.log(membersact);
+      logit("disconect")
+      logit("čekárna "+queue);
+      logit("memeber act");
+      logit(membersact);
       
     }
     catch(err){
-      console.log(err)
-      console.log("čekárna"+queue);
-      console.log("memeber act");
-      console.log(membersact);
+      logit("disconect")
+      logit(err)
+      logit("čekárna "+queue);
+      logit("memeber act");
+      logit(membersact);
     }
-    console.log(members)
+    logit(members)
+    logit("end of disconect")
   });
 
   socket.on('game message', (data) => {
     // we tell the client to execute 'new message'
-    console.log("OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data.message);
+    logit("OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data.message);
     socket.broadcast.to(membersact[socket.username].room).emit('game chat', data);
   });
   socket.on('fire', (data) => {
     // we tell the client to execute 'new message'
-    console.log("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data);
+    logit("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data);
     socket.broadcast.to(membersact[socket.username].room).emit('cover', data);
   });
   socket.on('ready', (data) => {
     // we tell the client to execute 'new message'
-    console.log("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: ready");
+    logit("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: ready");
     socket.broadcast.to(membersact[socket.username].room).emit('prepared', data);
   });
   socket.on('send invite', (data) => {
-    console.log(data)
+    logit(data)
   });
   socket.on('quickgame', () => {
     if(queue.length==0){
@@ -134,5 +138,14 @@ io.on('connection', (socket) => {
     let d = new Date();
     let n = d.getTime();
     socket.emit('pingpongball',([data,n]))
+  })
+  function logit(mes){
+    io.to('log').emit("nlog",mes)
+    console.log(mes)
+    logs[logs.length]=mes
+  }
+  socket.on('jlog', (data)=>{
+    socket.join("log")
+    socket.emit("jlog",logs)
   })
 });
