@@ -31,10 +31,14 @@ $(function() {
   }
   const addParticipantsMessage = (data) => {
     var message = '';
-    if (data.numUsers === 1) {
+    if (data.numUsers == 1) {
       message += "Jsi tu sám";
     } else {
-      message += "Máš tu " + (data.numUsers-1) + " kamarády";
+      if(data.numUsers == 2){
+        message += "Máš tu jednoho kamaráda";
+      }else{
+        message += "Máš tu " + (data.numUsers-1) + " kamarády";
+      }
     }
     log(message);
   }
@@ -207,7 +211,7 @@ $(function() {
           minx=minx+((arr[i].h-1)/2)-((arr[i].w-1)/2)
         }
         if(build){
-        document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);' src='img/"+arr[i].src+".png' draggable='true' id='"+i+"'>"
+        document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;pointer-events: all;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);' src='img/"+arr[i].src+".png' draggable='true' id='"+i+"'>"
         }else{
           if(arr[i].l){
             document.querySelector("#lode").innerHTML=document.querySelector("#lode").innerHTML+"<img style='image-rendering: pixelated;position: absolute;left:"+minx+"em;top:"+miny+"em;height:"+arr[i].h+"em;width:"+arr[i].w+"em;transform:rotateZ("+arr[i].otoceni*90+"deg);pointer-events: none;' src='img/"+arr[i].src+".png' id='"+i+"'>"

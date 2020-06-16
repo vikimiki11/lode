@@ -105,7 +105,6 @@ ul {
   width: 25em;
   border-left: black solid 2px;
   min-height: 600px;
-  pointer-events: none;
 }
 
 main{
@@ -193,7 +192,6 @@ main > div{
 
 .local{
   width: 20rem;
-  pointer-events: none;
 }
 
 .centr{
@@ -252,8 +250,8 @@ main > div{
 }
 img{
   user-select: none;
-  pointer-events: all;
+  pointer-events: none;
 }
 #lode{
-  pointer-events: none;
+  pointer-events: all;
 }

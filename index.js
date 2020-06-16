@@ -14,6 +14,7 @@ server.listen(port, () => {
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Chatroom
+var memnum=0
 var logs=[]
 var members = []
 var membersact={}
@@ -41,6 +42,7 @@ io.on('connection', (socket) => {
   // when the client emits 'add user', this listens and executes
   socket.on('add user', (username) => {
     if(members.indexOf(username)==-1){
+      memnum++
       members[members.length]=username
       tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>připojil se: "+username+"</h2>"
       membersact[username]={}
@@ -55,7 +57,7 @@ io.on('connection', (socket) => {
       tolog=tolog+JSON.stringify(members)+"</div>"
       logit(tolog)
       socket.emit('login', {
-        numUsers: membersact.length
+        numUsers: memnum
       });
     }else{socket.emit('denied',(true))}
   });
@@ -78,6 +80,7 @@ io.on('connection', (socket) => {
         tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>disconect</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
         logit(tolog)
         io.emit('players',membersact)
+        memnum=memnum-1
       }
       catch(err){
         tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>disconect</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
