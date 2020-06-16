@@ -6,8 +6,10 @@ $(function() {
   ];
   clickcare=false
   rivaldata=[]
-  var cascomitu=999999999999999
+  cascomitu=0
   // Initialize variables
+  debug=true
+  var tablesetup = "<tr><td id='bunka00'><div id='lode' style='position: relative;'></div></td><td id='bunka01'></td><td id='bunka02'></td><td id='bunka03'></td><td id='bunka04'></td><td id='bunka05'></td><td id='bunka06'></td><td id='bunka07'></td><td id='bunka08'></td><td id='bunka09'></td></tr><tr><td id='bunka10'></td><td id='bunka11'></td><td id='bunka12'></td><td id='bunka13'></td><td id='bunka14'></td><td id='bunka15'></td><td id='bunka16'></td><td id='bunka17'></td><td id='bunka18'></td><td id='bunka19'></td></tr><tr><td id='bunka20'></td><td id='bunka21'></td><td id='bunka22'></td><td id='bunka23'></td><td id='bunka24'></td><td id='bunka25'></td><td id='bunka26'></td><td id='bunka27'></td><td id='bunka28'></td><td id='bunka29'></td></tr><tr><td id='bunka30'></td><td id='bunka31'></td><td id='bunka32'></td><td id='bunka33'></td><td id='bunka34'></td><td id='bunka35'></td><td id='bunka36'></td><td id='bunka37'></td><td id='bunka38'></td><td id='bunka39'></td></tr><tr><td id='bunka40'></td><td id='bunka41'></td><td id='bunka42'></td><td id='bunka43'></td><td id='bunka44'></td><td id='bunka45'></td><td id='bunka46'></td><td id='bunka47'></td><td id='bunka48'></td><td id='bunka49'></td></tr><tr><td id='bunka50'></td><td id='bunka51'></td><td id='bunka52'></td><td id='bunka53'></td><td id='bunka54'></td><td id='bunka55'></td><td id='bunka56'></td><td id='bunka57'></td><td id='bunka58'></td><td id='bunka59'></td></tr><tr><td id='bunka60'></td><td id='bunka61'></td><td id='bunka62'></td><td id='bunka63'></td><td id='bunka64'></td><td id='bunka65'></td><td id='bunka66'></td><td id='bunka67'></td><td id='bunka68'></td><td id='bunka69'></td></tr><tr><td id='bunka70'></td><td id='bunka71'></td><td id='bunka72'></td><td id='bunka73'></td><td id='bunka74'></td><td id='bunka75'></td><td id='bunka76'></td><td id='bunka77'></td><td id='bunka78'></td><td id='bunka79'></td></tr><tr><td id='bunka80'></td><td id='bunka81'></td><td id='bunka82'></td><td id='bunka83'></td><td id='bunka84'></td><td id='bunka85'></td><td id='bunka86'></td><td id='bunka87'></td><td id='bunka88'></td><td id='bunka89'></td></tr><tr><td id='bunka90'></td><td id='bunka91'></td><td id='bunka92'></td><td id='bunka93'></td><td id='bunka94'></td><td id='bunka95'></td><td id='bunka96'></td><td id='bunka97'></td><td id='bunka98'></td><td id='bunka99'></td></tr>"
   var $window = $(window);
   var $usernameInput = $('.usernameInput'); // Input for username
   var $inputMessage = $('.global'); // Input message input box
@@ -86,10 +88,7 @@ $(function() {
       socket.emit('game message', {
         username: username,
         message: message
-      });console.log({
-        username: username,
-        message: message
-      })
+      });
     }
   }
 
@@ -190,8 +189,6 @@ $(function() {
     function printlodi(arr){
       document.querySelector("#lode").innerHTML=""
       for(var i=0;i<arr.length;i++){
-        console.log(i)
-        console.log(arr)
         miny=9999999
         minx=9999999
         for(let y=0;y<arr[i].souradnice.length;y++){
@@ -201,10 +198,6 @@ $(function() {
           if(arr[i].souradnice[y][1]<miny){
             miny=arr[i].souradnice[y][1]
           }
-          console.log(minx)
-          console.log(miny)
-          console.log(arr[i].souradnice[y][1])
-          console.log(arr[i].souradnice[y][0])
         }
         if(Math.abs(arr[i].otoceni)%2==1){
           miny=miny-((arr[i].h-1)/2)+((arr[i].w-1)/2)
@@ -302,7 +295,9 @@ $(function() {
       for(i=0;i<arr.length;i++){
         for(y=0;y<arr[i].length;y++){
           if(arr[y][i]!="voda"){
-            console.log("x: "+y+" y: "+i+" = "+arr[y][i])
+            if(debug){
+              console.log("x: "+y+" y: "+i+" = "+arr[y][i])
+            }
             s=arr[y][i]
             a=rwe(arr[y+1],i)
             b=rwe(arr[y+1],i+1)
@@ -378,7 +373,7 @@ $(function() {
       }
     ]
     aktlode=startlode
-    console.log(lodetometrix(aktlode))
+
     
   // Keyboard and mouse events
 
@@ -422,7 +417,7 @@ $(function() {
         socket.emit('ready',[aktlode,cascomitu])
         if(derprepare){
           malert("Hra začala")
-          if(rivalcas<cascomitu){
+          if(rivalcas>cascomitu){
             game(true)
           }else{
             game(false)
@@ -484,9 +479,9 @@ $(function() {
     gameLog("Začal jsi hru s: "+coplayer)
     $game.show()
     build=true
-    printlodi(aktlode)
     $("#kontrola").show()
     $('.priprava').hide()
+    createtable()
     ichprepare=false
     derprepare=false
     enfarr=[]
@@ -537,7 +532,7 @@ $(function() {
     derprepare=true
     if(ichprepare){
       malert("Hra začala")
-      if(rivalcas<cascomitu){
+      if(rivalcas>cascomitu){
         game(true)
       }else{
         game(false)
@@ -549,9 +544,13 @@ $(function() {
   setInterval(function(){ping()},10000)
   setInterval(function(){opal=opal*0.96;document.querySelector(".alert").style.opacity=opal},100)
   function malert(mes){document.querySelector(".alert").innerHTML=mes;opal=1}
+  function createtable(){
+  document.querySelector(".tabulka").innerHTML=tablesetup
+  aktlode=startlode
+  printlodi(aktlode)
   document.querySelectorAll("table.centr td").forEach(item => {
     item.addEventListener('click', event => {
-      if(clickcare){
+      if(clickcare && item.id!="nobodycares"){
         myfarr[myfarr.length]=item.id.split("bunka")[1]
         socket.emit("fire",item.id.split("bunka")[1])
         win=merge(rivaldata,myfarr,false)
@@ -560,7 +559,8 @@ $(function() {
         }
         setTimeout(function(){game(false)},5000)
         clickcare=false
+        item.id="nobodycares"
       }
     })
-  })
+  })}
 })
