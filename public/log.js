@@ -10,7 +10,9 @@ $(function() {
     }
     socket.emit('jlog',)
     socket.on('jlog', data =>{
-        document.querySelector('aside').innerHTML=JSON.stringify(data[1])
+        var d = new Date();
+        time=d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+":"+d.getMilliseconds()
+        document.querySelector('aside').innerHTML=time+"<br>"+JSON.stringify(data[1])
         spot=document.querySelector("main")
         for(i=0;i<data[0].length;i++){
             print(data[0][i])
@@ -20,6 +22,8 @@ $(function() {
         print(data)
     })
     socket.on('players',data=>{
-        document.querySelector('aside').innerHTML=JSON.stringify(data)
+        var d = new Date();
+        time=d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+":"+d.getMilliseconds()
+        document.querySelector('aside').innerHTML=time+"<br>"+JSON.stringify(data)
     })
   })

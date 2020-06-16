@@ -148,6 +148,8 @@ io.on('connection', (socket) => {
     socket.emit('pingpongball',([data,n]))
   })
   function logit(mes){
+    var d = new Date();
+    mes=d.getHours()+":"+d.getMinutes()+":"+d.getSeconds()+":"+d.getMilliseconds()+"<br>"+mes
     io.to('log').emit("nlog",mes)
     console.log(mes)
     logs[logs.length]=mes
