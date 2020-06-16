@@ -267,3 +267,6 @@ h2 {
 p.alert:hover{
   opacity: 1 !important;
 }
+ul#members li{
+  display:none
+}

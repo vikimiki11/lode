@@ -405,6 +405,13 @@ $(function() {
       setTimeout(function(){quckread=true},1000)
     }
   });
+  document.querySelector("#inviteinput").addEventListener("keyup", ()=>{
+    if(document.querySelector("#inviteinput").value!=""){
+      document.querySelector("#invitestyle").innerHTML="ul#members li[value*='"+document.querySelector("#inviteinput").value+"']{display:block}"
+    }else{
+      document.querySelector("#invitestyle").innerHTML="ul#members li{display:block !important}"
+    }
+  });
   document.querySelector("#kontrola").addEventListener("click", ()=>{
     if(lodetometrix(aktlode)){
       if(!(checkfortouch(lodetometrix(aktlode)))){
@@ -576,6 +583,12 @@ $(function() {
       if(membersact[rival].active==0){
         socket.emit('leave')
         malert("Odešel ti sploluhráč")
+      }
+    }
+    document.querySelector("#members").innerHTML=""
+    for(i in membersact){
+      if(i!=username && membersact[i].active === 0){
+        document.querySelector("#members").innerHTML=document.querySelector("#members").innerHTML+"<li value='"+i+"'>"+i+"</li>"
       }
     }
   })
