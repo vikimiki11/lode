@@ -258,3 +258,12 @@ img{
 h2 {
   font-size: 1.2em;
 }
+#leavediv{
+  text-align: center;
+  height: auto;
+  color: white;
+  font-size: 0.5em;
+}
+p.alert:hover{
+  opacity: 1 !important;
+}

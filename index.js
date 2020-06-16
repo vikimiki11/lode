@@ -107,6 +107,14 @@ io.on('connection', (socket) => {
   socket.on('send invite', (data) => {
     logit(data)
   });
+  socket.on("leave",()=>{
+    socket.leave(membersact[socket.username].room)
+    membersact[socket.username].active=0
+    membersact[socket.username].rival=""
+    membersact[socket.username].room=""
+    socket.emit("out room",)
+    io.emit('players',membersact)
+  })
   socket.on('quickgame', () => {
     if(queue.length==0){
       socket.emit('in queue')
