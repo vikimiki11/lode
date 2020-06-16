@@ -15,18 +15,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Chatroom
 var logs=[]
-var numUsers = 0;
 var members = []
 var membersact={}
 var queue=[]
 var userid=[]
 var lobbyid=0
+function rcolor(){
+  r=127+Math.round(127*Math.random())
+  g=127+Math.round(127*Math.random())
+  b=127+Math.round(127*Math.random())
+  color="#"+r.toString(16)+g.toString(16)+b.toString(16);
+  return color
+}
 io.on('connection', (socket) => {
-  var addedUser = false;
   // when the client emits 'new message', this listens and executes
   socket.on('new message', (data) => {
     // we tell the client to execute 'new message'
-    logit("OD: "+socket.username+" Do: Global Co: "+data);
+    logit("OD: "+socket.username+" Do: Global Co: "+data+"<br>");
     socket.broadcast.emit('new message', {
       username: socket.username,
       message: data
@@ -37,72 +42,63 @@ io.on('connection', (socket) => {
   socket.on('add user', (username) => {
     if(members.indexOf(username)==-1){
       members[members.length]=username
-      logit("připojil se: "+username+" takže tu už máme:")
+      tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>připojil se: "+username+"</h2>"
       membersact[username]={}
       membersact[username].active=0
       membersact[username].rival=""
       membersact[username].room=""
       membersact[username].id=socket.id
-      if (addedUser) return;
+      io.emit('players',membersact)
 
       // we store the username in the socket session for this client
       socket.username = username;
-      logit(members)
-      logit("konec uživatelů")
-      ++numUsers;
-      addedUser = true;
+      tolog=tolog+JSON.stringify(members)+"</div>"
+      logit(tolog)
       socket.emit('login', {
-        numUsers: numUsers
+        numUsers: membersact.length
       });
     }else{socket.emit('denied',(true))}
   });
 
   // when the user disconnects.. perform this
   socket.on('disconnect', () => {
-    if (addedUser) {
-      --numUsers;
-    }
-    try{
-      let username=socket.username
-      membersact[username].active=false
-      membersact[username].rival=""
-      membersact[username].room=""
-      members=members.filter(function (el) {
-        return el != socket.username;
-      });
-      queue=queue.filter(function (el) {
-        return el != socket.username;
-      });
-      logit("disconect")
-      logit("čekárna "+queue);
-      logit("memeber act");
-      logit(membersact);
-      
-    }
-    catch(err){
-      logit("disconect")
-      logit(err)
-      logit("čekárna "+queue);
-      logit("memeber act");
-      logit(membersact);
-    }
-    logit(members)
-    logit("end of disconect")
+    tolog=""
+    if(socket.username){
+        try{
+        let username=socket.username
+        membersact[username].active=false
+        membersact[username].rival=""
+        membersact[username].room=""
+        members=members.filter(function (el) {
+          return el != socket.username;
+        });
+        queue=queue.filter(function (el) {
+          return el != socket.username;
+        });
+        tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>disconect</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
+        logit(tolog)
+        io.emit('players',membersact)
+      }
+      catch(err){
+        tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>disconect</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
+        logit(tolog)
+        io.emit('players',membersact)
+      }}
   });
 
   socket.on('game message', (data) => {
     // we tell the client to execute 'new message'
-    logit("OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data.message);
+    logit("OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data.message+"<br>");
     socket.broadcast.to(membersact[socket.username].room).emit('game chat', data);
   });
   socket.on('fire', (data) => {
     // we tell the client to execute 'new message'
-    logit("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data);
+    logit("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: "+data+"<br>");
     socket.broadcast.to(membersact[socket.username].room).emit('cover', data);
   });
   socket.on('ready', (data) => {
     // we tell the client to execute 'new message'
-    logit("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: ready");
+    logit("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: ready"+"<br>");
     socket.broadcast.to(membersact[socket.username].room).emit('prepared', data);
   });
   socket.on('send invite', (data) => {
@@ -124,6 +120,7 @@ io.on('connection', (socket) => {
       membersact[user2].active=true
       membersact[user2].rival=user1
       membersact[user2].room=lobbyid
+      io.emit('players',membersact)
       lobbyid++
       queue=queue.filter(function (el) {
         return el != queue[0];});
@@ -146,6 +143,6 @@ io.on('connection', (socket) => {
   }
   socket.on('jlog', (data)=>{
     socket.join("log")
-    socket.emit("jlog",logs)
+    socket.emit("jlog",[logs,membersact])
   })
 });
