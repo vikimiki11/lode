@@ -338,6 +338,39 @@ $(function() {
         src:"kostka",
         otoceni:0,
         l:true
+      },
+      {
+        w:2,
+        h:2,
+        souradnice:[[-2,0],[-1,0],[-2,1],[-1,1]],
+        src:"Kkostka",
+        otoceni:0,
+        l:true
+      },
+      {
+        w:5,
+        h:2,
+        souradnice:[[2,-1],[3,-1],[4,-1],[5,-1],[6,-1],[5,-2],[3,-2]],
+        src:"parnik",
+        otoceni:0,
+        l:true
+      },
+      {
+        w:3,
+        h:2,
+        souradnice:[[8,-1],[9,-1],[10,-1],[9,-2]],
+        src:"tetris",
+        otoceni:0,
+        l:true
+      }
+      ,
+      {
+        w:4,
+        h:1,
+        souradnice:[[-1,3],[-1,4],[-1,5],[-1,6]],
+        src:"runway",
+        otoceni:1,
+        l:true
       }
     ]
     aktlode=JSON.parse(JSON.stringify(startlode));
