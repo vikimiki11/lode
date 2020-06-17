@@ -450,18 +450,21 @@ $(function() {
   // socket events
   socket.on('recieveinvite',data=>{
     if(data[1]==username){
+      invites=invites.filter(function (el) {
+        return el!=data[0];
+      });
+      malert("Přišel ti invite od "+data[0]+".")
       invites[invites.length]=data[0]
     }
     document.querySelector("#invites").innerHTML=""
     for(i=0; i<invites.length;i++){
       if(invites[i]!=username && membersact[invites[i]].active === 0){
-        document.querySelector("#invites").innerHTML=document.querySelector("#invites").innerHTML+"<li value='"+invites[i]+"'>"+invites[i]+"</li>"
+        document.querySelector("#invites").innerHTML="<li value='"+invites[i]+"'>"+invites[i]+"</li>"+document.querySelector("#invites").innerHTML
       }
     }
     document.querySelectorAll("#invites li").forEach(item => {
       item.addEventListener('click', event => {
-        if(onceacc){
-        malert("Přišel ti invite od uživatele "+item.innerText+".")
+        if(onceacc===true){
         socket.emit('acceptinvite',item.innerText)
         onceacc=false
         setTimeout(function(){onceacc=true},1000)
@@ -621,6 +624,30 @@ $(function() {
 
       })
     })
+
+
+
+    invites=invites.filter(function (el) {
+      return membersact[el].active===0;
+    });
+    document.querySelector("#invites").innerHTML=""
+    for(i=0; i<invites.length;i++){
+      if(invites[i]!=username && membersact[invites[i]].active === 0){
+        document.querySelector("#invites").innerHTML="<li value='"+invites[i]+"'>"+invites[i]+"</li>"+document.querySelector("#invites").innerHTML
+      }
+    }
+    document.querySelectorAll("#invites li").forEach(item => {
+      item.addEventListener('click', event => {
+        if(onceacc===true){
+        socket.emit('acceptinvite',item.innerText)
+        onceacc=false
+        setTimeout(function(){onceacc=true},1000)
+        }
+      })
+    })
+
+
+
   })
   opal=0
   setInterval(function(){ping()},10000)
