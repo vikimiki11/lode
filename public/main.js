@@ -8,6 +8,8 @@ $(function() {
   var clickcare=false
   var rivaldata=[]
   var cascomitu=0
+  var invites=[]
+  var onceacc=true
   // Initialize variables
   debug=true
   var tablesetup = "<tr><td id='bunka00'><div id='lode' style='position: relative;'></div></td><td id='bunka01'></td><td id='bunka02'></td><td id='bunka03'></td><td id='bunka04'></td><td id='bunka05'></td><td id='bunka06'></td><td id='bunka07'></td><td id='bunka08'></td><td id='bunka09'></td></tr><tr><td id='bunka10'></td><td id='bunka11'></td><td id='bunka12'></td><td id='bunka13'></td><td id='bunka14'></td><td id='bunka15'></td><td id='bunka16'></td><td id='bunka17'></td><td id='bunka18'></td><td id='bunka19'></td></tr><tr><td id='bunka20'></td><td id='bunka21'></td><td id='bunka22'></td><td id='bunka23'></td><td id='bunka24'></td><td id='bunka25'></td><td id='bunka26'></td><td id='bunka27'></td><td id='bunka28'></td><td id='bunka29'></td></tr><tr><td id='bunka30'></td><td id='bunka31'></td><td id='bunka32'></td><td id='bunka33'></td><td id='bunka34'></td><td id='bunka35'></td><td id='bunka36'></td><td id='bunka37'></td><td id='bunka38'></td><td id='bunka39'></td></tr><tr><td id='bunka40'></td><td id='bunka41'></td><td id='bunka42'></td><td id='bunka43'></td><td id='bunka44'></td><td id='bunka45'></td><td id='bunka46'></td><td id='bunka47'></td><td id='bunka48'></td><td id='bunka49'></td></tr><tr><td id='bunka50'></td><td id='bunka51'></td><td id='bunka52'></td><td id='bunka53'></td><td id='bunka54'></td><td id='bunka55'></td><td id='bunka56'></td><td id='bunka57'></td><td id='bunka58'></td><td id='bunka59'></td></tr><tr><td id='bunka60'></td><td id='bunka61'></td><td id='bunka62'></td><td id='bunka63'></td><td id='bunka64'></td><td id='bunka65'></td><td id='bunka66'></td><td id='bunka67'></td><td id='bunka68'></td><td id='bunka69'></td></tr><tr><td id='bunka70'></td><td id='bunka71'></td><td id='bunka72'></td><td id='bunka73'></td><td id='bunka74'></td><td id='bunka75'></td><td id='bunka76'></td><td id='bunka77'></td><td id='bunka78'></td><td id='bunka79'></td></tr><tr><td id='bunka80'></td><td id='bunka81'></td><td id='bunka82'></td><td id='bunka83'></td><td id='bunka84'></td><td id='bunka85'></td><td id='bunka86'></td><td id='bunka87'></td><td id='bunka88'></td><td id='bunka89'></td></tr><tr><td id='bunka90'></td><td id='bunka91'></td><td id='bunka92'></td><td id='bunka93'></td><td id='bunka94'></td><td id='bunka95'></td><td id='bunka96'></td><td id='bunka97'></td><td id='bunka98'></td><td id='bunka99'></td></tr>"
@@ -446,6 +448,27 @@ $(function() {
     socket.emit('leave')
   });
   // socket events
+  socket.on('recieveinvite',data=>{
+    if(data[1]==username){
+      invites[invites.length]=data[0]
+    }
+    document.querySelector("#invites").innerHTML=""
+    for(i=0; i<invites.length;i++){
+      if(invites[i]!=username && membersact[invites[i]].active === 0){
+        document.querySelector("#invites").innerHTML=document.querySelector("#invites").innerHTML+"<li value='"+invites[i]+"'>"+invites[i]+"</li>"
+      }
+    }
+    document.querySelectorAll("#invites li").forEach(item => {
+      item.addEventListener('click', event => {
+        if(onceacc){
+        malert("Přišel ti invite od uživatele "+item.innerText+".")
+        socket.emit('acceptinvite',item.innerText)
+        onceacc=false
+        setTimeout(function(){onceacc=true},1000)
+        }
+      })
+    })
+  })
   // Whenever the server emits 'login', log the login message
   socket.on('login', (data) => {
     connected = true;
@@ -591,6 +614,13 @@ $(function() {
         document.querySelector("#members").innerHTML=document.querySelector("#members").innerHTML+"<li value='"+i+"'>"+i+"</li>"
       }
     }
+    document.querySelectorAll("#members li").forEach(item => {
+      item.addEventListener('click', event => {
+        malert("Poslal jsi pozvánku do hry pro uživatele "+item.innerText+".")
+        socket.emit('sendinvite',item.innerText)
+
+      })
+    })
   })
   opal=0
   setInterval(function(){ping()},10000)

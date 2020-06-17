@@ -268,5 +268,31 @@ p.alert:hover{
   opacity: 1 !important;
 }
 ul#members li{
-  display:none
+  display:none;
+  margin-top: 0.5rem;
+}
+ul#members li::before {
+  content: "+";
+  color: #000000;
+  font-weight: bold;
+  margin-left: -2em;
+  margin-right: 1rem;
+  background-color: #00ff03;
+  border-radius: 0.5rem;
+  padding: 0 0.2rem;
+  border: 1px black solid;
+}
+ul#invites li::before {
+  content: "✓";
+  color: #000000;
+  font-weight: bold;
+  margin-left: -2em;
+  margin-right: 1rem;
+  background-color: #00ff03;
+  border-radius: 0.5rem;
+  padding: 0 0.2rem;
+  border: 1px black solid;
+}
+li:hover {
+  background-color: #c8dae8;
 }

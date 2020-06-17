@@ -77,13 +77,13 @@ io.on('connection', (socket) => {
         queue=queue.filter(function (el) {
           return el != socket.username;
         });
-        tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>"+socket.username+"se odpojil</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
+        tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>"+socket.username+" se odpojil</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
         logit(tolog)
         io.emit('players',membersact)
         memnum=memnum-1
       }
       catch(err){
-        tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>"+socket.username+"se odpojil</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
+        tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>"+socket.username+" se odpojil</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
         logit(tolog)
         io.emit('players',membersact)
       }}
@@ -104,9 +104,6 @@ io.on('connection', (socket) => {
     logit("tah OD: "+socket.username+" Do: "+membersact[socket.username].room+" Co: ready"+"<br>");
     socket.broadcast.to(membersact[socket.username].room).emit('prepared', data);
   });
-  socket.on('send invite', (data) => {
-    logit(data)
-  });
   socket.on("leave",()=>{
     socket.leave(membersact[socket.username].room)
     membersact[socket.username].active=0
@@ -122,22 +119,50 @@ io.on('connection', (socket) => {
     }else{
       user1=socket.username
       user2=queue[0]
-      socket.emit('in room',user2)
-      socket.join(lobbyid)
-      socket.to(membersact[queue[0]].id).emit("jj",[lobbyid,user1])
-      membersact[user1].active=true
-      membersact[user1].rival=user2
-      membersact[user1].room=lobbyid
-      membersact[user2].active=true
-      membersact[user2].rival=user1
-      membersact[user2].room=lobbyid
-      io.emit('players',membersact)
-      lobbyid++
-      queue=queue.filter(function (el) {
-        return el != queue[0];});
+      if(membersact[user1].room=="" && membersact[user2].room==""){
+        socket.emit('in room',user2)
+        socket.join(lobbyid)
+        socket.to(membersact[queue[0]].id).emit("jj",[lobbyid,user1])
+        membersact[user1].active=true
+        membersact[user1].rival=user2
+        membersact[user1].room=lobbyid
+        membersact[user2].active=true
+        membersact[user2].rival=user1
+        membersact[user2].room=lobbyid
+        io.emit('players',membersact)
+        lobbyid++
+        queue=queue.filter(function (el) {
+          return el != queue[0];});
+      }
     }
     console.log("čekárna"+queue);
   });
+  socket.on('sendinvite',data=>{
+    tolog="<div style='background-color:"+rcolor()+";padding:1rem;margin:1rem;box-sizing: border-box;'><h2>"+socket.username+" poslal invite pro "+data+"</h2>čekárna "+JSON.stringify(queue)+"<br>"+JSON.stringify(members)+"</div>"
+    logit(tolog)
+    socket.broadcast.emit('recieveinvite',[socket.username,data])
+  })
+  socket.on('acceptinvite',data=>{
+      user1=socket.username
+      user2=data
+      if(membersact[user1].room=="" && membersact[user2].room==""){
+        socket.emit('in room',user2)
+        socket.join(lobbyid)
+        socket.to(membersact[user2].id).emit("jj",[lobbyid,user1])
+        membersact[user1].active=true
+        membersact[user1].rival=user2
+        membersact[user1].room=lobbyid
+        membersact[user2].active=true
+        membersact[user2].rival=user1
+        membersact[user2].room=lobbyid
+        io.emit('players',membersact)
+        lobbyid++
+        queue=queue.filter(function (el) {
+          return el != user1;});
+        queue=queue.filter(function (el) {
+          return el != user2;});
+        }
+  })
   socket.on('jj', (data) => {
       socket.join(data[0])
       socket.emit('in room',data[1])
